@@ -1,4 +1,29 @@
 #!/usr/bin/env python
+
+"""
+MIT License
+
+Copyright (c) 2016 Harvard NLP
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+"""
+
 # Preprocess images for ease of training
 import sys, os, argparse, json, glob, logging
 import numpy as np
@@ -7,6 +32,8 @@ sys.path.insert(0, '%s'%os.path.join(os.path.dirname(__file__), '../utils/'))
 from image_utils import *
 from multiprocessing import Pool
 from multiprocessing.dummy import Pool as ThreadPool
+
+HANDWRITING_DATA_BASEDIR = '/data/apoorvad/cs221proj/words/'
 
 def process_args(args):
     parser = argparse.ArgumentParser(description='Process images for ease of training. Crop images to get rid of the background. For a cropped image of size (w,h), we pad it with PAD_TOP, PAD_BOTTOM, PAD_LEFT, PAD_RIGHT, and the result is of size (w+PAD_LEFT+PAD_RIGHT, h+PAD_TOP+PAD_BOTTOM. Then we see which bucket it falls into and pad them with whitespace to match the smallest bucket that can hold it. Finally, downsample images.')
@@ -63,6 +90,15 @@ def main_parallel(l):
 	return
     status = downsample_image(output_filename, output_filename, downsample_ratio)
 
+def get_filenames_from_csv(path_to_csv):
+  lines = open(path_to_csv, "r").readlines()
+  paths = []
+  for i, l in enumerate(lines):
+    if i == 0:
+      continue
+    paths.append(HANDWRITING_DATA_BASEDIR + l[:l.index("|")])
+  return paths
+
 def main(args):
     parameters = process_args(args)
     logging.basicConfig(
@@ -87,15 +123,16 @@ def main(args):
     crop_blank_default_size = json.loads(parameters.crop_blank_default_size)
     pad_size = json.loads(parameters.pad_size)
     buckets = json.loads(parameters.buckets)
-    print buckets[0]
-    raw_input()
     downsample_ratio = parameters.downsample_ratio
-
-    filenames = glob.glob(os.path.join(input_dir, '*'+postfix))
+    
+    filenames = get_filenames_from_csv(HANDWRITING_DATA_BASEDIR + "data/image_path_label.csv")
+    #filenames = glob.glob(os.path.join(input_dir, '*'+postfix))
     logging.info('Creating pool with %d threads'%parameters.num_threads)
     pool = ThreadPool(parameters.num_threads)
     logging.info('Jobs running...')
+    #results = pool.map(main_parallel, [(filename, postfix, os.path.join(output_dir, filename[len(HANDWRITING_DATA_BASEDIR):]), crop_blank_default_size, pad_size, buckets, downsample_ratio) for filename in filenames])
     results = pool.map(main_parallel, [(filename, postfix, os.path.join(output_dir, os.path.basename(filename)), crop_blank_default_size, pad_size, buckets, downsample_ratio) for filename in filenames])
+
     pool.close()
     pool.join()
 
