@@ -20,9 +20,7 @@ The goal is to infer the following ASCII text:
 MOVE
 ```
 
-## How to Train
-
-### Preprocessing Instructions
+## Preprocessing
 
 We obtained our dataset from the IAM Handwriting Database 3.0 (http://www.fki.inf.unibe.ch/databases/iam-handwriting-database/download-the-iam-handwriting-database). A sample of these images and directory structure is included in this repo in the ```images``` folder. Follow the steps below to preprocess the image data.
 
@@ -67,67 +65,17 @@ python scripts/preprocessing/create_buckets.py test
 python scripts/preprocessing/create_buckets.py valid
 ```
 
-### Preprocessing Instructions
+## Training
 
-The images in the dataset contain a LaTeX formula rendered on a full page. To accelerate training, we need to preprocess the images.
-
-Please download the training data from https://zenodo.org/record/56198#.WFojcXV94jA and extract into source (master) folder.
-
-```
-cd im2markup
-```
-
-```
-python scripts/preprocessing/preprocess_images.py --input-dir ../formula_images --output-dir ../images_processed
-```
-
-The above command will crop the formula area, and group images of similar sizes to facilitate batching.
-
-Next, the LaTeX formulas need to be tokenized or normalized.
-
-```
-python scripts/preprocessing/preprocess_formulas.py --mode normalize --input-file ../im2latex_formulas.lst --output-file formulas.norm.lst
-```
-
-The above command will normalize the formulas. Note that this command will produce some error messages since some formulas cannot be parsed by the KaTeX parser.
-
-Then we need to prepare train, validation and test files. We will exclude large images from training and validation set, and we also ignore formulas with too many tokens or formulas with grammar errors.
-
-```
-python scripts/preprocessing/preprocess_filter.py --filter --image-dir ../images_processed --label-path formulas.norm.lst --data-path ../im2latex_train.lst --output-path train.lst
-```
-
-```
-python scripts/preprocessing/preprocess_filter.py --filter --image-dir ../images_processed --label-path formulas.norm.lst --data-path ../im2latex_validate.lst --output-path validate.lst
-```
-
-```
-python scripts/preprocessing/preprocess_filter.py --no-filter --image-dir ../images_processed --label-path formulas.norm.lst --data-path ../im2latex_test.lst --output-path test.lst
-```
-
-Finally, we generate the vocabulary from training set. All tokens occuring less than (including) 1 time will be excluded from the vocabulary.
-
-```
-python scripts/preprocessing/generate_latex_vocab.py --data-path train.lst --label-path formulas.norm.lst --output-file latex_vocab.txt
-```
-
-Train, Test and Valid images need to be segmented into buckets based on image size (height, width) to facilitate batch processing.
-
-train_buckets.npy, valid_buckets.npy, test_buckets.npy can be generated using the DataProcessing.ipynb script
-
-```
-### Run the individual cells from this notebook
-ipython notebook DataProcessing.ipynb
-```
-
-## Train
+Now, we are finally ready to train our model. You can do this by running:
 
 ```
 python attention.py
 ```
+
 Default hyperparameters used:
-* BATCH_SIZE      = 20
-* EMB_DIM         = 80
+* BATCH_SIZE      = 16
+* EMB_DIM         = 60
 * ENC_DIM         = 256
 * DEC_DIM         = ENC_DIM*2
 * D               = 512 (#channels in feature grid)
@@ -136,46 +84,31 @@ Default hyperparameters used:
 * H               = 20  (Maximum height of feature grid)
 * W               = 50  (Maximum width of feature grid)
 
-The train NLL drops to 0.08 after 18 epochs of training on 24GB Nvidia M40 GPU.
+You can use the following flags to set additional hyperparameters:
 
-## Test
+* --lr: learning rate
+* --decay_rate: decay_rate
+* --num_epochs: number of epochs
+* --num_iterations: number of iterations
+* --optimizer: type of optimizer (sgd, adam, rmsprop)
+* --batch_size: batch size
+* --embedding_size: embedding size
 
-predict() function in the attention.py script can be called to predict from validation or test sets.
+## Testing
 
-Predict.ipynb script displays and renders the results saved by the predict() function
-
-## Evaluate
-
-attention.py scores the train set and validation set after each epoch (measures mean train NLL, perplexity)
-
-#### Scores from this implementation
-
-![results_1](results_1.png)
-![results_2](results_2.png)
-
-## Weight files
-[Google Drive](https://drive.google.com/drive/folders/0BwbIUfIM1M8sc0tEMGk1NGlKZTA?usp=sharing)
+predict() function in the attention.py script can be called to predict from validation or test sets. If you call this function with visualization turned on, it will save images with an indication of where attention was placed for a certain character.
 
 ## Visualizing the attention mechanism
 
-![att_1](Pictures/Attention_1.png)
+![alt text](https://raw.githubusercontent.com/nexusapoorvacus/Handwriting-Recognition/master/att_imgs/image_att1.png)
 
-![att_2](Pictures/Attention_2.png)
+![alt text](https://raw.githubusercontent.com/nexusapoorvacus/Handwriting-Recognition/master/att_imgs/image_att2.png)
 
-![att_3](Pictures/Attention_3.png)
+![alt text](https://raw.githubusercontent.com/nexusapoorvacus/Handwriting-Recognition/master/att_imgs/image_att3.png)
 
-![att_4](Pictures/Attention_4.png)
+![alt text](https://raw.githubusercontent.com/nexusapoorvacus/Handwriting-Recognition/master/att_imgs/image_att4.png)
 
-![att_5](Pictures/Attention_5.png)
+![alt text](https://raw.githubusercontent.com/nexusapoorvacus/Handwriting-Recognition/master/att_imgs/image_att5.png)
 
-![att_6](Pictures/Attention_6.png)
+![alt text](https://raw.githubusercontent.com/nexusapoorvacus/Handwriting-Recognition/master/att_imgs/image_att6.png)
 
-![att_7](Pictures/Attention_7.png)
-
-![att_8](Pictures/Attention_8.png)
-
-![att_9](Pictures/Attention_9.png)
-
-![att_10](Pictures/Attention_10.png)
-
-![att_11](Pictures/Attention_11.png)
