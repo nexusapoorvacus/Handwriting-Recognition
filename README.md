@@ -20,31 +20,52 @@ The goal is to infer the following ASCII text:
 MOVE
 ```
 
-## Prerequsites
+## How to Train
 
-Most of the code is written in tensorflow, with Python for preprocessing.
+### Preprocessing Instructions
 
-### Preprocess
-The proprocessing for this dataset is exactly reproduced as the original torch implementation by the HarvardNLP group
+We obtained our dataset from the IAM Handwriting Database 3.0 (http://www.fki.inf.unibe.ch/databases/iam-handwriting-database/download-the-iam-handwriting-database). A sample of these images and directory structure is included in this repo in the ```images``` folder. Follow the steps below to preprocess the image data.
 
-Python
+1. Download the words dataset from the IAM Handwriting Database and place the words.txt file in the ```data``` folder.
 
-* Pillow
-* numpy
+2. Run the parse raw data script and place the ```images_path_label.csv``` file that is created in the ```images``` folder.
 
-Optional: We use Node.js and KaTeX for preprocessing [Installation](https://nodejs.org/en/)
+```
+python scripts/parse_raw_data.py images/data/words.txt
+```
 
-##### pdflatex [Installaton](https://www.tug.org/texlive/)
+3. Resize all images to have a width of 120 pixels and a height of 50 pixels.
 
-Pdflatex is used for rendering LaTex during evaluation.
+```
+python scripts/resize_images.py images/images_path_label.csv images/
+```
 
-##### ImageMagick convert [Installation](http://www.imagemagick.org/script/index.php)
+4. Preprocess images by cropping out whitespace
 
-Convert is used for rending LaTex during evaluation.
+```
+python scripts/preprocessing/preprocess_images_handwriting.py --input-dir images/data --output-dir images/processed
+```
+5. Create labels file called labels.norm.lst that contains pipe ("|") separated characters of the ASCII convert of the corresponding image in images_path_label.csv.
 
-##### Webkit2png [Installation](http://www.paulhammond.org/webkit2png/)
+```
+python scripts/preprocessing/preprocess_labels_handwriting.py images/image_path_file.csv images/
+```
 
-Webkit2png is used for rendering HTML during evaluation.
+6. Filter images into a train.lst, test.lst, and valid.lst. Move these files to ```images/```
+
+```
+python scripts/preprocessing/preprocess_filter_handwriting.py
+```
+
+7. Lastly create train, test, and valid buckets to be read from when training.
+
+```
+python scripts/preprocessing/create_buckets.py train
+
+python scripts/preprocessing/create_buckets.py test
+
+python scripts/preprocessing/create_buckets.py valid
+```
 
 ### Preprocessing Instructions
 
