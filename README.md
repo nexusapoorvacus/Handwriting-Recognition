@@ -1,12 +1,6 @@
-# im2latex tensorflow implementation
+# Handwriting Recognition Using Im2Latex
 
-This is a tensorflow implementation of the HarvardNLP paper - What You Get Is What You See: A Visual Markup Decompiler.
-
-This is also a potential solution to OpenAI's Requests For Research Problem - [im2latex](https://openai.com/requests-for-research/#im2latex)
-
-The paper (http://arxiv.org/pdf/1609.04938v1.pdf) provides technical details of the model.
-
-Original Torch implementation of the paper[https://github.com/harvardnlp/im2markup/blob/master/]
+This repository uses the architecture proposed in "What You Get Is What You See: A Visual Markup Decompiler" (http://arxiv.org/pdf/1609.04938v1.pdf) to the problem of Handwriting Recognition. The base implementation was done in Tensorflow by ritheshkumar95/im2latex-tensorflow (forked) and was modified to work for Handwriting Recognition. The original Torch implementation of the paper is located here: https://github.com/harvardnlp/im2markup/blob/master/
 
     What You Get Is What You See: A Visual Markup Decompiler  
     Yuntian Deng, Anssi Kanervisto, and Alexander M. Rush
