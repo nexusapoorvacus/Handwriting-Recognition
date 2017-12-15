@@ -5,12 +5,16 @@ import random
 from tqdm import tqdm
 import sys
 
+VOCAB_FILE = "../../images/vocab.txt"
+LABELS_LIST = "../../images/labels.norm.lst"
+BUCKETS_LST_DIR = "../../images/"
+
 if len(sys.argv) < 2:
   print("This script takes in either test, valid or train as an argument")
   sys.exit()
 
-vocab = open("vocab.txt").readlines()
-formulae = open("labels.norm.lst",'r').readlines()
+vocab = open(VOCAB_FILE).readlines()
+formulae = open(LABELS_LIST,'r').readlines()
 char_to_idx = {x.split('\n')[0]:i for i,x in enumerate(vocab)}
 # print len(char_to_idx)
 char_to_idx['#UNK'] = len(char_to_idx)
@@ -23,7 +27,7 @@ idx_to_char = {y:x for x,y in char_to_idx.iteritems()}
 print len(char_to_idx)
 
 set = sys.argv[1] # Use train, valid or test to generate corresponding files
-file_list = open(""+set+".lst",'r').readlines()
+file_list = open(BUCKETS_LST_DIR+set+".lst",'r').readlines()
 set_list = []
 missing = {}
 for i,line in enumerate(file_list):

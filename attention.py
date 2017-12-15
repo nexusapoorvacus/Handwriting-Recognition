@@ -15,8 +15,8 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument('--lr', action='store', default=0.01)
 parser.add_argument('--decay_rate', action='store', default=2)
-parser.add_argument('--num_epochs', action='store', default=1)
-parser.add_argument('--num_iterations', action='store', default=1000)
+parser.add_argument('--num_epochs', action='store', default=5)
+parser.add_argument('--num_iterations', action='store', default=10000000)
 parser.add_argument('--optimizer', action='store', default="sgd")
 parser.add_argument('--batch_size', action='store', default='16')
 parser.add_argument('--embedding_size', action='store', default=60)
@@ -31,11 +31,11 @@ num_iterations = int(args.num_iterations)
 optimizer_type = args.optimizer
 emb_size = int(args.embedding_size)
 
-BUCKETS_DIR = "/data/apoorvad/cs221proj/words/"
-PROPERTIES_DIR = "/data/apoorvad/cs221proj/words/properties.npy"
-PROCESSED_IMAGES_DIR = "/data/apoorvad/cs221proj/words/processed/"
-WEIGHTS_CHECKPOINT_FILE = "/data/apoorvad/cs221proj/words/checkpoints/weights_best.ckpt"
-SAVE_ATT_IMGS = "/data/apoorvad/cs221proj/words/att_imgs/"
+BUCKETS_DIR = "images/"
+PROPERTIES_DIR = "images/properties.npy"
+PROCESSED_IMAGES_DIR = "images/processed/"
+WEIGHTS_CHECKPOINT_FILE = "checkpoints/weights_best.ckpt"
+SAVE_ATT_IMGS = "att_imgs/"
 
 BATCH_SIZE      = int(args.batch_size)
 EMB_DIM         = emb_size
@@ -80,7 +80,7 @@ elif optimizer_type == "sgd": # argv[2] == "SGD"
 else:
   train_step = tf.train.RMSPropOptimizer(learn_rate).minimize(loss)
 
-def predict(set='valid',batch_size=BATCH_SIZE,visualize=False):
+def predict(set='valid',batch_size=100,visualize=False):
     if visualize:
         assert (batch_size==1), "Batch size should be 1 for visualize mode"
     import random
@@ -139,12 +139,14 @@ def predict(set='valid',batch_size=BATCH_SIZE,visualize=False):
 		    print "Latex sequence: ",idx_to_chars(inp_seqs[0,:i])
 		    outp = Image.blend(inp_image.convert('RGBA'),out_image.convert('RGBA'),0.5)
 		    outp.save(SAVE_ATT_IMGS + "image_att" + str(i) + ".png", title=properties['idx_to_char'][inp_seqs[0,i]])
-    acc = find_accuracy(true_labels, inp_seqs)
-    print("accuracy: " + str(acc))
-    np.save('/data/apoorvad/cs221proj/words/pred_imgs',imgs)
-    np.save('/data/apoorvad/cs221proj/words/pred_latex',inp_seqs)
+    char_acc, word_acc, word_len_distr = find_accuracy(true_labels, inp_seqs)
+    print("char accuracy: " + str(char_acc))
+    print("word accuracy: " + str(word_acc))
+    print("word length analysis:" + str(word_len_distr))
+    np.save('images/pred_imgs',imgs)
+    np.save('images/pred_latex',inp_seqs)
     print "Saved npy files! Use Predict.ipynb to view results"
-    return acc
+    return char_acc, word_acc, word_len_distr
     #return inp_seqs
 
 def find_accuracy(true_chars, pred_chars):
@@ -152,12 +154,27 @@ def find_accuracy(true_chars, pred_chars):
   print("pred", pred_chars)
   good = 0
   total = 0
+  good_word_count = 0
+  total_words = 0
+  word_size_stats = {}
   for i in range(len(true_chars)):
+    good_word = True
+    good_c = 0
     for c in range(len(true_chars[i])):
       if true_chars[i][c] == pred_chars[i][c]:
         good += 1
+        good_c += 1
+      else:
+        good_word = False
       total += 1
-  return (good + 0.0) / total
+    if good_word:
+      good_word_count += 1
+    total_words += 1
+    if len(true_chars[i]) in word_size_stats:
+      word_size_stats[len(true_chars[i])].append((good_c+0.0)/len(true_chars[i]))
+    else:
+      word_size_stats[len(true_chars[i])] = [(good_c+0.0)/len(true_chars[i])]
+  return ((good + 0.0) / total, (good_word_count + 0.0)/total_words, word_size_stats)
    
 
 def score(set='valid',batch_size=BATCH_SIZE):
@@ -224,10 +241,11 @@ def train():
     val_loss, val_perp = score('valid',BATCH_SIZE)
     if val_loss < best_loss:
         best_loss = val_loss
-        saver.save(sess,WEIGHTS_CHECKPOINT_FILE)
-        print "\tBest Validation Loss Till Now! Saving state!"
+        #saver.save(sess,WEIGHTS_CHECKPOINT_FILE)
+        print "\tBest Validation Loss Till Now!"
     else:
         lr = lr * (1.0/decay_rate)
+    saver.save(sess, WEIGHTS_CHECKPOINT_FILE+"_"+str(i))
     print "Epoch Accuracy: " + str(predict())
     sys.stdout.flush()
 

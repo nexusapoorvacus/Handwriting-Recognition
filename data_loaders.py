@@ -6,8 +6,8 @@ import re
 import glob
 from PIL import Image
 
-BUCKETS_DIR = "/data/apoorvad/cs221proj/words/"
-PROCESSED_IMAGES_DIR = "/data/apoorvad/cs221proj/words/processed/"
+BUCKETS_DIR = "images/"
+PROCESSED_IMAGES_DIR = "images/processed/"
 
 def data_iterator(set='train',batch_size = 32):
     '''

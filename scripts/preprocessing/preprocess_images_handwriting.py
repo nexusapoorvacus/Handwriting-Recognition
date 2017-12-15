@@ -33,7 +33,7 @@ from image_utils import *
 from multiprocessing import Pool
 from multiprocessing.dummy import Pool as ThreadPool
 
-HANDWRITING_DATA_BASEDIR = '/data/apoorvad/cs221proj/words/'
+HANDWRITING_DATA_BASEDIR = '../../images/'
 
 def process_args(args):
     parser = argparse.ArgumentParser(description='Process images for ease of training. Crop images to get rid of the background. For a cropped image of size (w,h), we pad it with PAD_TOP, PAD_BOTTOM, PAD_LEFT, PAD_RIGHT, and the result is of size (w+PAD_LEFT+PAD_RIGHT, h+PAD_TOP+PAD_BOTTOM. Then we see which bucket it falls into and pad them with whitespace to match the smallest bucket that can hold it. Finally, downsample images.')

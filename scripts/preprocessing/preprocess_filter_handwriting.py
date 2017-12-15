@@ -1,7 +1,7 @@
 import sys
 from random import shuffle
 
-BASEDIR = "/data/apoorvad/cs221proj/words/"
+BASEDIR = "../../images/"
 
 PERCENT_TRAIN = 0.80
 PERCENT_VALIDATE = 0.10
