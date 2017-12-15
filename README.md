@@ -6,25 +6,19 @@ This repository uses the architecture proposed in "What You Get Is What You See:
     Yuntian Deng, Anssi Kanervisto, and Alexander M. Rush
     http://arxiv.org/pdf/1609.04938v1.pdf
 
-This is a general-purpose, deep learning-based system to decompile an image into presentational markup. For example, we can infer the LaTeX or HTML source from a rendered image.
+This deep learning framework can be used to learn a representation of an image. In this case, our input image is an image of text and we are converting this image to an ASCII representation.
 
 <p align="center"><img src="http://lstm.seas.harvard.edu/latex/network.png" width="400"></p>
 
-An example input is a rendered LaTeX formula:
+Below is an example of an input image of text:
 
-<p align="center"><img src="http://lstm.seas.harvard.edu/latex/results/website/images/119b93a445-orig.png"></p>
+![alt text](https://raw.githubusercontent.com/nexusapoorvacus/Handwriting-Recognition/master/images/data/a01/a01-000u/a01-000u-00-01.png)
 
-The goal is to infer the LaTeX formula that can render such an image:
+The goal is to infer the following ASCII text:
 
 ```
- d s _ { 1 1 } ^ { 2 } = d x ^ { + } d x ^ { - } + l _ { p } ^ { 9 } \frac { p _ { - } } { r ^ { 7 } } \delta ( x ^ { - } ) d x ^ { - } d x ^ { - } + d x _ { 1 } ^ { 2 } + \; \cdots \; + d x _ { 9 } ^ { 2 }
+MOVE
 ```
-
-## Sample results from this implementation
-
-![png](sample.png)
-
-For more results, view [results_validset.html](https://rawgit.com/ritheshkumar95/im2markup-tensorflow/master/results_validset.html), [results_testset.html](https://rawgit.com/ritheshkumar95/im2markup-tensorflow/master/results_testset.html) files.
 
 ## Prerequsites
 
