@@ -19,6 +19,22 @@ The goal is to infer the following ASCII text:
 ```
 MOVE
 ```
+## Important Files
+
+<b>attention.py</b>: File that is run for training and testing
+
+<b>data_loaders</b>: File that is called by attention.py to load data files
+
+<b>tflib/</b>: Contains network.py and ops.py which contain the CNN and LSTM architectures implemented in Tensorflow.
+
+<b>scripts/</b>: Contains scripts needed to preprocess data
+
+<b>images/</b>: Contains image data
+
+<b>baseline_model/<b/>: Contains code from our baseline and milestone models
+    
+<b>att_imgs</b>: Contains images with a visualization of attention
+
 
 ## Preprocessing
 
