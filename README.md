@@ -31,7 +31,7 @@ MOVE
 
 <b>images/</b>: Contains image data
 
-<b>baseline_model/<b/>: Contains code from our baseline and milestone models
+<b>baseline_model/</b>: Contains code from our baseline and milestone models
     
 <b>att_imgs</b>: Contains images with a visualization of attention
 
