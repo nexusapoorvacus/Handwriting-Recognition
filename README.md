@@ -117,17 +117,29 @@ predict() function in the attention.py script can be called to predict from vali
 ## Visualizing the attention mechanism
 
 ![alt text](https://raw.githubusercontent.com/nexusapoorvacus/Handwriting-Recognition/master/att_imgs/image_att1.png)
+
 "m"
+
 ![alt text](https://raw.githubusercontent.com/nexusapoorvacus/Handwriting-Recognition/master/att_imgs/image_att2.png)
+
 "i"
+
 ![alt text](https://raw.githubusercontent.com/nexusapoorvacus/Handwriting-Recognition/master/att_imgs/image_att3.png)
+
 "g"
+
 ![alt text](https://raw.githubusercontent.com/nexusapoorvacus/Handwriting-Recognition/master/att_imgs/image_att4.png)
+
 "h"
+
 ![alt text](https://raw.githubusercontent.com/nexusapoorvacus/Handwriting-Recognition/master/att_imgs/image_att5.png)
+
 "t"
+
 ![alt text](https://raw.githubusercontent.com/nexusapoorvacus/Handwriting-Recognition/master/att_imgs/image_att6.png)
+
 "#END”
+
 ## Baseline and Milestone model
 
 The code for our baseline and milestone models can be found in the folder baseline_model.
